@@ -15,7 +15,6 @@ def get_readings(
     end_ts: str = None, 
     device_id: int = None, 
     reading_type: str = None, 
-    request_type: str = "every",  # New parameter for request type
     db: Session = Depends(get_db)
 ):
     filters = []
@@ -28,11 +27,11 @@ def get_readings(
     
     query = db.query(Reading).filter(*filters)
     
-    if request_type == "daily":
+    if reading_type == "daily":
         query = query.group_by(func.date(Reading.ts))
-    elif request_type == "hourly":
+    elif reading_type == "hourly":
         query = query.group_by(func.date(Reading.ts), func.hour(Reading.ts))
-    elif request_type == "monthly":
+    elif reading_type == "monthly":
         query = query.group_by(func.year(Reading.ts), func.month(Reading.ts))
     
     query = query.offset(skip).limit(limit)
