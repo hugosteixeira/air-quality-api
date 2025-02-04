@@ -26,18 +26,6 @@ def get_readings(
         filters.append(Reading.reading_type == reading_type)
     
     query = db.query(Reading).filter(*filters)
-    
-    if reading_type == "daily":
-        query = query.group_by(func.date(Reading.ts))
-    elif reading_type == "hourly":
-        query = query.group_by(func.date(Reading.ts), func.hour(Reading.ts))
-    elif reading_type == "monthly":
-        query = query.group_by(func.year(Reading.ts), func.month(Reading.ts))
-    elif reading_type == "yearly":
-        query = query.group_by(func.year(Reading.ts))
-    elif reading_type == "instant":
-        query = query.filter(Reading.reading_type == "instant")
-    
     query = query.offset(skip).limit(limit)
     readings = query.all()
     return readings
