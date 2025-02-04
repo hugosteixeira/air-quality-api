@@ -33,6 +33,10 @@ def get_readings(
         query = query.group_by(func.date(Reading.ts), func.hour(Reading.ts))
     elif reading_type == "monthly":
         query = query.group_by(func.year(Reading.ts), func.month(Reading.ts))
+    elif reading_type == "yearly":
+        query = query.group_by(func.year(Reading.ts))
+    elif reading_type == "instant":
+        query = query.filter(Reading.reading_type == "instant")
     
     query = query.offset(skip).limit(limit)
     readings = query.all()
