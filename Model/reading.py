@@ -1,6 +1,6 @@
 from sqlalchemy import Integer, String, Float, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship, mapped_column
-from App.DatabaseManager import Base
+from DatabaseManager import Base
 
 class Reading(Base):
     __tablename__ = 'readings'

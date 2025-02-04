@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, func
-from App.database import get_db
-from App.Model.reading import Reading
-from App.Model.readerDevice import ReaderDevice
+from database import get_db
+from Model.reading import Reading
+from Model.readerDevice import ReaderDevice
 
 router = APIRouter()
 

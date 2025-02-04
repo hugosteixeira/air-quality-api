@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from App.routers import data, watcher
+from routers import data, watcher
 
 app = FastAPI()
 

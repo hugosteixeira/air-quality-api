@@ -1,5 +1,5 @@
 from fastapi import APIRouter, BackgroundTasks
-from App.DataWatcher import DataWatcher
+from DataWatcher import DataWatcher
 
 router = APIRouter()
 data_watcher = DataWatcher()

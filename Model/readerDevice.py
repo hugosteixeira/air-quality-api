@@ -1,6 +1,6 @@
 from sqlalchemy import Integer, String, Float, event
 from sqlalchemy.orm import relationship, mapped_column
-from App.DatabaseManager import Base
+from DatabaseManager import Base
 
 class ReaderDevice(Base):
     __tablename__ = 'readerdevices'

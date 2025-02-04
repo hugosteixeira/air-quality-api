@@ -2,9 +2,9 @@ import requests
 import schedule
 import time
 import logging
-from App.Model.readerDevice import ReaderDevice
-from App.Model.reading import Reading
-from App.DatabaseManager import DatabaseManager
+from Model.readerDevice import ReaderDevice
+from Model.reading import Reading
+from DatabaseManager import DatabaseManager
 from sqlalchemy.exc import IntegrityError
 
 class DataWatcher:
