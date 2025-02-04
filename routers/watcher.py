@@ -7,7 +7,7 @@ data_watcher = DataWatcher()
 @router.get("/start_watcher")
 def start_watcher():
     data_watcher = DataWatcher()
-    data_watcher.run()
+    data_watcher.start()
     return {"message": "Data watcher started"}
 
 @router.post("/stop_watcher")
