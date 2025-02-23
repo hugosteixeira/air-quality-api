@@ -2,12 +2,11 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers import data, watcher
-import ssl
+import threading
+from DataWatcher import DataWatcher
 
 app = FastAPI()
 
-ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-ssl_context.load_cert_chain('cert.pem', keyfile='key.pem')
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
@@ -20,5 +19,11 @@ app.add_middleware(
 app.include_router(data.router)
 app.include_router(watcher.router)
 
+def start_data_watcher():
+    data_watcher = DataWatcher()
+    data_watcher.start()
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", ssl=ssl_context)
+    watcher_thread = threading.Thread(target=start_data_watcher)
+    watcher_thread.start()
+    uvicorn.run(app, host="0.0.0.0")

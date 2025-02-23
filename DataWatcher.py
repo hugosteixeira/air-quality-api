@@ -21,18 +21,18 @@ class DataWatcher:
 
     def parse_reading(self, json_data, reading_type, device_id):
         return Reading(
-            ts=json_data['ts'],
-            co2=json_data['co2'],
-            pm1=json_data['pm1'],
-            pr=json_data['pr'],
-            hm=json_data['hm'],
-            tp=json_data['tp'],
-            pm25_aqius=json_data['pm25']['aqius'],
-            pm25_aqicn=json_data['pm25']['aqicn'],
-            pm25_conc=json_data['pm25']['conc'],
-            pm10_aqius=json_data['pm10']['aqius'],
-            pm10_aqicn=json_data['pm10']['aqicn'],
-            pm10_conc=json_data['pm10']['conc'],
+            ts=json_data.get('ts'),
+            co2=json_data.get('co2', 0.0),
+            pm1=json_data.get('pm1', 0.0),
+            pr=json_data.get('pr', 0.0),
+            hm=json_data.get('hm', 0.0),
+            tp=json_data.get('tp', 0.0),
+            pm25_aqius=json_data.get('pm25', {}).get('aqius', 0.0),
+            pm25_aqicn=json_data.get('pm25', {}).get('aqicn', 0.0),
+            pm25_conc=json_data.get('pm25', {}).get('conc', 0.0),
+            pm10_aqius=json_data.get('pm10', {}).get('aqius', 0.0),
+            pm10_aqicn=json_data.get('pm10', {}).get('aqicn', 0.0),
+            pm10_conc=json_data.get('pm10', {}).get('conc', 0.0),
             reading_type=reading_type,
             device_id=device_id
         )

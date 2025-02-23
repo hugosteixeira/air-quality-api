@@ -19,16 +19,21 @@ def get_readings(
 ):
     filters = []
     if start_ts and end_ts:
-        filters.append(and_(Reading.ts >= start_ts, Reading.ts <= end_ts))
+        filters.append(and_(func.date(Reading.ts) >= start_ts, func.date(Reading.ts) <= end_ts))
     if device_id:
         filters.append(Reading.device_id == device_id)
     if reading_type:
         filters.append(Reading.reading_type == reading_type)
     
     query = db.query(Reading).filter(*filters)
+    
+    total_count = query.count()  # Get the total count of records
     query = query.offset(skip).limit(limit)
     readings = query.all()
-    return readings
+    return {
+        "total_count": total_count,
+        "readings": readings
+    }
 
 @router.get("/devices")
 def get_devices(db: Session = Depends(get_db)):
