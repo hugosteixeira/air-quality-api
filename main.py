@@ -26,4 +26,6 @@ def start_data_watcher():
 if __name__ == "__main__":
     watcher_thread = threading.Thread(target=start_data_watcher)
     watcher_thread.start()
-    uvicorn.run(app, host="0.0.0.0")
+    uvicorn.run(app, host="0.0.0.0",
+    ssl_keyfile='/etc/ssl/private/apache-selfsigned.key',
+    ssl_certfile='/etc/ssl/certs/apache-selfsigned.crt')
