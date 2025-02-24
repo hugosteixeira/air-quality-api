@@ -34,4 +34,4 @@ def start_data_watcher():
 if __name__ == "__main__":
     watcher_thread = threading.Thread(target=start_data_watcher)
     watcher_thread.start()
-    uvicorn.run(app, host="0.0.0.0", ssl=ssl_context)
+    uvicorn.run(app, ssl=ssl_context)
