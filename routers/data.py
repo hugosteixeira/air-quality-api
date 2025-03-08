@@ -4,6 +4,7 @@ from sqlalchemy import and_, func
 from database import get_db
 from Model.reading import Reading
 from Model.readerDevice import ReaderDevice
+from datetime import datetime
 
 router = APIRouter()
 
@@ -19,7 +20,9 @@ def get_readings(
 ):
     filters = []
     if start_ts and end_ts:
-        filters.append(and_(func.date(Reading.ts) >= start_ts, func.date(Reading.ts) <= end_ts))
+        start_date = datetime.strptime(start_ts, "%Y-%m-%d").date()
+        end_date = datetime.strptime(end_ts, "%Y-%m-%d").date()
+        filters.append(and_(func.date(Reading.ts) >= start_date, func.date(Reading.ts) <= end_date))
     if device_id:
         filters.append(Reading.device_id == device_id)
     if reading_type:
