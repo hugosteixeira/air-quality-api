@@ -7,7 +7,7 @@ DBSession = scoped_session(sessionmaker())
 Base = declarative_base()
 
 class DatabaseManager:
-    def __init__(self, db_name='sqlitecloud://crhzpe9thk.g2.sqlite.cloud:8860?apikey=FzWZJqldrYQxJPIYzX6rPTowcCzhE40xFthINUFNlb4'):
+    def __init__(self, db_name='sqlite+sqlitecloud://crhzpe9thk.g2.sqlite.cloud:8860?apikey=FzWZJqldrYQxJPIYzX6rPTowcCzhE40xFthINUFNlb4'):
         logging.basicConfig(level=logging.INFO)
         try:
             self.engine = create_engine(db_name)
