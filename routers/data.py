@@ -28,7 +28,8 @@ def get_readings(
     query = db.query(Reading).filter(*filters)
     
     total_count = query.count()  # Get the total count of records
-    query = query.offset(skip).limit(limit)
+    if limit > 0:
+        query = query.offset(skip).limit(limit)
     readings = query.all()
     return {
         "total_count": total_count,
