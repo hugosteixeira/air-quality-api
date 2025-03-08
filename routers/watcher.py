@@ -10,6 +10,12 @@ def start_watcher():
     data_watcher.start()
     return {"message": "Data watcher started"}
 
+@router.get("/run")
+def start_watcher():
+    data_watcher = DataWatcher()
+    data_watcher.run()
+    return {"message": "Data watcher runned"}
+
 @router.post("/stop_watcher")
 def stop_watcher():
     # Implement a way to stop the watcher if needed
