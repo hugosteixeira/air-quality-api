@@ -60,7 +60,7 @@ class DataWatcher:
 
     def start(self):
         self.run()
-        schedule.every(30).minutes.do(self.run)
+        schedule.every(5).minutes.do(self.run)
         while True:
             schedule.run_pending()
             time.sleep(1)
