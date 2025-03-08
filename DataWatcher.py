@@ -8,11 +8,12 @@ from DatabaseManager import DatabaseManager
 from sqlalchemy.exc import IntegrityError
 
 class DataWatcher:
-    def __init__(self, db_name='sqlite:///air_quality.db'):
+    def __init__(self, db_name='sqlitecloud://crhzpe9thk.g2.sqlite.cloud:8860/air_quality.db?apikey=FzWZJqldrYQxJPIYzX6rPTowcCzhE40xFthINUFNlb4'):
         self.db_manager = DatabaseManager(db_name)
         logging.basicConfig(level=logging.INFO)
 
     def fetch_data(self, uri):
+        logging.info(f"Fetching data from {uri}")
         response = requests.get(uri)
         if response.status_code == 200:
             return response.json()
@@ -20,6 +21,7 @@ class DataWatcher:
             response.raise_for_status()
 
     def parse_reading(self, json_data, reading_type, device_id):
+        logging.info(f"Parsing reading for device {device_id} and type {reading_type}")
         return Reading(
             ts=json_data.get('ts'),
             co2=json_data.get('co2', 0.0),
@@ -59,8 +61,13 @@ class DataWatcher:
             try:
                 session.commit()
                 logging.info(f"Successfully added {len(new_readings)} new readings.")
-            except IntegrityError:
+            except IntegrityError as e:
+                logging.error(f"IntegrityError: {e}")
                 session.rollback()
+            finally:
+                session.close()
+        else:
+            logging.info("No new readings to add.")
 
     def start(self):
         self.run()
