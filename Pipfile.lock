@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "5e5f2648e6d7068d704e07dc254f02fdbbf98261010695a8befdc0e955b10d61"
+            "sha256": "3033a7d408ae37dc37ea691bfb6a88e1b8c1fc8a6123985c23e9e20a216c13b1"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -778,6 +778,14 @@
             ],
             "index": "pypi",
             "version": "==2.0.38"
+        },
+        "sqlalchemy-sqlitecloud": {
+            "hashes": [
+                "sha256:0e351bec6722a469250dc3d05c6caaf5b57f1584d0fec2de3a2b3708cb441475",
+                "sha256:be5ad4d0b14a54739f02c9c307dfddeb37a950893fbd1be116826829a3232d76"
+            ],
+            "index": "pypi",
+            "version": "==0.1.2"
         },
         "sqlitecloud": {
             "hashes": [

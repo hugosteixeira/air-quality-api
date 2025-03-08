@@ -9,6 +9,7 @@ schedule = "*"
 fastapi = {extras = ["standard"], version = "*"}
 requests = "*"
 sqlitecloud = "*"
+sqlalchemy-sqlitecloud = "*"
 
 [dev-packages]
 
