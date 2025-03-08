@@ -40,6 +40,7 @@ class DataWatcher:
     def run(self):
         session = self.db_manager.get_session()
         devices = session.query(ReaderDevice).all()
+        new_readings = []
         for device in devices:
             data = self.fetch_data(device.uri)
             for reading_type in ['daily', 'hourly', 'monthly', 'instant']:
@@ -51,12 +52,15 @@ class DataWatcher:
                         reading_type=reading.reading_type
                     ).first()
                     if not existing_reading:
-                        session.add(reading)
-                        try:
-                            session.commit()
-                            logging.info(f"Successfully added new reading: {reading}")
-                        except IntegrityError:
-                            session.rollback()
+                        new_readings.append(reading)
+        
+        if new_readings:
+            session.add_all(new_readings)
+            try:
+                session.commit()
+                logging.info(f"Successfully added {len(new_readings)} new readings.")
+            except IntegrityError:
+                session.rollback()
 
     def start(self):
         self.run()
