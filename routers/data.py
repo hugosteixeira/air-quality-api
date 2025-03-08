@@ -20,9 +20,9 @@ def get_readings(
 ):
     filters = []
     if start_ts and end_ts:
-        start_date = datetime.strptime(start_ts, "%Y-%m-%d").date()
-        end_date = datetime.strptime(end_ts, "%Y-%m-%d").date()
-        filters.append(and_(func.date(Reading.ts) >= start_date, func.date(Reading.ts) <= end_date))
+        start_date = datetime.strptime(start_ts, "%Y-%m-%d")  # Convert to datetime at 00:00:00
+        end_date = datetime.strptime(end_ts, "%Y-%m-%d") + timedelta(days=1) - timedelta(seconds=1)  # Set to 23:59:59
+        filters.append(and_(Reading.ts >= start_date, Reading.ts <= end_date))
     if device_id:
         filters.append(Reading.device_id == device_id)
     if reading_type:
