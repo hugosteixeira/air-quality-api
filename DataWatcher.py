@@ -64,6 +64,13 @@ class DataWatcher:
             except IntegrityError as e:
                 logging.error(f"IntegrityError: {e}")
                 session.rollback()
+                for reading in new_readings:
+                    try:
+                        session.add(reading)
+                        session.commit()
+                    except IntegrityError:
+                        session.rollback()
+                        logging.info(f"Duplicate entry found for ts: {reading.ts}, device_id: {reading.device_id}, reading_type: {reading.reading_type}")
             finally:
                 session.close()
         else:
