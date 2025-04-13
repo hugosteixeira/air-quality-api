@@ -42,7 +42,7 @@ def get_readings(
 @router.get("/devices")
 def get_devices(db: Session = Depends(get_db)):
     devices = db.query(ReaderDevice).all()
-    return [{"id": device.id, "name": device.name} for device in devices]
+    return [{"id": device.id, "name": device.name, "latitude": device.latitude, "longitude": device.longitude} for device in devices]
 
 @router.get("/readings/latest")
 def get_latest_instant_reading(device_id: int, db: Session = Depends(get_db)):
