@@ -20,8 +20,8 @@ def get_readings(
 ):
     filters = []
     if start_ts and end_ts:
-        start_date = datetime.strptime(start_ts, "%Y-%m-%d")  # Convert to datetime at 00:00:00
-        end_date = datetime.strptime(end_ts, "%Y-%m-%d") + timedelta(days=1) - timedelta(seconds=1)  # Set to 23:59:59
+        start_date = datetime.strptime(start_ts, "%Y-%m-%d")
+        end_date = datetime.strptime(end_ts, "%Y-%m-%d") + timedelta(days=1) - timedelta(seconds=1)
         filters.append(and_(Reading.ts >= start_date, Reading.ts <= end_date))
     if device_id:
         filters.append(Reading.device_id == device_id)
@@ -30,7 +30,7 @@ def get_readings(
     
     query = db.query(Reading).filter(*filters)
     
-    total_count = query.count()  # Get the total count of records
+    total_count = query.count()
     if limit > 0:
         query = query.offset(skip).limit(limit)
     readings = query.all()

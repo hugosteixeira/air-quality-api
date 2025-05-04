@@ -18,5 +18,4 @@ def start_watcher():
 
 @router.post("/stop_watcher")
 def stop_watcher():
-    # Implement a way to stop the watcher if needed
     return {"message": "Data watcher stopped"}
