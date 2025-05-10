@@ -4,7 +4,7 @@ from sqlalchemy import and_, func
 from database import get_db
 from Model.reading import Reading
 from Model.readerDevice import ReaderDevice
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Union  # Added Union for mixed types
 from pydantic import BaseModel  # Import BaseModel for request body validation
 
