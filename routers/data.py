@@ -59,9 +59,9 @@ def get_readings_post(
 ):
     filters = []
     if request.start_ts and request.end_ts:
-        start_date = datetime.strptime(request.start_ts, "%Y-%m-%d")
-        end_date = datetime.strptime(request.end_ts, "%Y-%m-%d") + timedelta(days=1) - timedelta(seconds=1)
-        filters.append(and_(Reading.ts >= start_date, Reading.ts <= end_date))
+        start_date = datetime.strptime(request.start_ts, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+        end_date = datetime.strptime(request.end_ts, "%Y-%m-%d").replace(tzinfo=timezone.utc) + timedelta(days=1)
+        filters.append(and_(Reading.ts >= start_date, Reading.ts < end_date))
     if request.device_ids:
         device_ids = [request.device_ids] if isinstance(request.device_ids, int) else request.device_ids
         filters.append(Reading.device_id.in_(device_ids))
