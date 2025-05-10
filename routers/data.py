@@ -5,7 +5,7 @@ from database import get_db
 from Model.reading import Reading
 from Model.readerDevice import ReaderDevice
 from datetime import datetime, timedelta
-from typing import List  # Added import for List
+from typing import List, Union  # Added Union for mixed types
 
 router = APIRouter()
 
@@ -46,7 +46,13 @@ def get_devices(db: Session = Depends(get_db)):
     return [{"id": device.id, "name": device.name, "latitude": device.latitude, "longitude": device.longitude} for device in devices]
 
 @router.get("/readings/latest")
-def get_latest_instant_reading(device_ids: List[int], db: Session = Depends(get_db)):  # Updated to accept a list of device IDs
+def get_latest_instant_reading(
+    device_ids: Union[int, List[int]],  # Accept either a single device_id or a list of device_ids
+    db: Session = Depends(get_db)
+):
+    if isinstance(device_ids, int):  # Convert single device_id to a list
+        device_ids = [device_ids]
+
     latest_readings = []
     for device_id in device_ids:
         latest_reading = db.query(Reading).filter(
