@@ -14,11 +14,16 @@ class DataWatcher:
 
     def fetch_data(self, uri):
         logging.info(f"Fetching data from {uri}")
-        response = requests.get(uri)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            response.raise_for_status()
+        try:
+            response = requests.get(uri, allow_redirects=True)  # Allow redirects
+            if response.status_code == 200:
+                logging.info(f"Final URL after redirects: {response.url}")  # Log the final URL
+                return response.json()
+            else:
+                response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Error fetching data: {e}")
+            raise
 
     def parse_reading(self, json_data, reading_type, device_id):
         logging.info(f"Parsing reading for device {device_id} and type {reading_type}")
@@ -39,9 +44,9 @@ class DataWatcher:
             device_id=device_id
         )
 
-    def run(self):
+    def run(self, device_ids=None):  # Added optional device_ids parameter
         session = self.db_manager.get_session()
-        devices = session.query(ReaderDevice).all()
+        devices = session.query(ReaderDevice).filter(ReaderDevice.id.in_(device_ids)).all() if device_ids else session.query(ReaderDevice).all()  # Filter devices if device_ids is provided
         new_readings = []
         for device in devices:
             data = self.fetch_data(device.uri)

@@ -5,6 +5,7 @@ from database import get_db
 from Model.reading import Reading
 from Model.readerDevice import ReaderDevice
 from datetime import datetime, timedelta
+from typing import List  # Added import for List
 
 router = APIRouter()
 
@@ -14,7 +15,7 @@ def get_readings(
     limit: int = 10, 
     start_ts: str = None, 
     end_ts: str = None, 
-    device_id: int = None, 
+    device_ids: List[int] = None,  # Changed to accept a list of device IDs
     reading_type: str = None, 
     db: Session = Depends(get_db)
 ):
@@ -23,8 +24,8 @@ def get_readings(
         start_date = datetime.strptime(start_ts, "%Y-%m-%d")
         end_date = datetime.strptime(end_ts, "%Y-%m-%d") + timedelta(days=1) - timedelta(seconds=1)
         filters.append(and_(Reading.ts >= start_date, Reading.ts <= end_date))
-    if device_id:
-        filters.append(Reading.device_id == device_id)
+    if device_ids:
+        filters.append(Reading.device_id.in_(device_ids))  # Updated to filter by a list of device IDs
     if reading_type:
         filters.append(Reading.reading_type == reading_type)
     
@@ -45,13 +46,17 @@ def get_devices(db: Session = Depends(get_db)):
     return [{"id": device.id, "name": device.name, "latitude": device.latitude, "longitude": device.longitude} for device in devices]
 
 @router.get("/readings/latest")
-def get_latest_instant_reading(device_id: int, db: Session = Depends(get_db)):
-    latest_reading = db.query(Reading).filter(
-        Reading.device_id == device_id,
-        Reading.reading_type == "instant"
-    ).order_by(Reading.ts.desc()).first()
+def get_latest_instant_reading(device_ids: List[int], db: Session = Depends(get_db)):  # Updated to accept a list of device IDs
+    latest_readings = []
+    for device_id in device_ids:
+        latest_reading = db.query(Reading).filter(
+            Reading.device_id == device_id,
+            Reading.reading_type == "instant"
+        ).order_by(Reading.ts.desc()).first()
+        if latest_reading:
+            latest_readings.append(latest_reading)
     
-    if latest_reading:
-        return latest_reading
+    if latest_readings:
+        return latest_readings
     else:
-        return {"message": "No instant readings found for the specified device."}
+        return {"message": "No instant readings found for the specified devices."}
