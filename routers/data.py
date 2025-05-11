@@ -52,7 +52,7 @@ def get_readings(
         "readings": readings
     }
 
-@router.post("/readings")  # Add POST method for /readings
+@router.post("/readings/")  # Add POST method for /readings
 def get_readings_post(
     request: ReadingsRequest,  # Accept filters in the request body
     db: Session = Depends(get_db)
@@ -79,12 +79,12 @@ def get_readings_post(
         "readings": readings
     }
 
-@router.get("/devices")
+@router.get("/devices/")
 def get_devices(db: Session = Depends(get_db)):
     devices = db.query(ReaderDevice).all()
     return [{"id": device.id, "name": device.name, "latitude": device.latitude, "longitude": device.longitude} for device in devices]
 
-@router.post("/readings/latest")  # Change to POST
+@router.post("/readings/latest/")  # Change to POST
 def get_latest_instant_reading(
     request: DeviceIdsRequest,  # Accept device_ids in the request body
     db: Session = Depends(get_db)
