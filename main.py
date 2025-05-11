@@ -21,11 +21,11 @@ app.add_middleware(HTTPSRedirectMiddleware)
 app.include_router(data.router)
 app.include_router(watcher.router)
 
-def start_data_watcher():
-    data_watcher = DataWatcher()
-    data_watcher.start()
+# def start_data_watcher():
+#     data_watcher = DataWatcher()
+#     data_watcher.start()
 
 if __name__ == "__main__":
-    watcher_thread = threading.Thread(target=start_data_watcher)
-    watcher_thread.start()
-    # uvicorn.run(app, port="8000", host="0.0.0.0")
+    # watcher_thread = threading.Thread(target=start_data_watcher)
+    # watcher_thread.start()
+    uvicorn.run(app, port="8000", host="0.0.0.0")
