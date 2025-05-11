@@ -28,4 +28,4 @@ def start_data_watcher():
 if __name__ == "__main__":
     watcher_thread = threading.Thread(target=start_data_watcher)
     watcher_thread.start()
-    uvicorn.run(app, port="8000", host="0.0.0.0")
+    # uvicorn.run(app, port="8000", host="0.0.0.0")
