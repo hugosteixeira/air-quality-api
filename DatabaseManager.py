@@ -27,7 +27,7 @@ class DatabaseManager:
     def initialize_sql(self, engine):
         DBSession.configure(bind=engine)
         Base.metadata.bind = engine
-        # Base.metadata.create_all(engine)
+        Base.metadata.create_all(engine)
 
     def get_session(self):
         return self.Session()
