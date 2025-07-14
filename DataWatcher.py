@@ -7,6 +7,7 @@ from Model.reading import Reading
 from DatabaseManager import DatabaseManager
 from sqlalchemy.exc import IntegrityError
 import threading
+from datetime import datetime
 
 class DataWatcher:
     def __init__(self, db_name='sqlitecloud://crhzpe9thk.g2.sqlite.cloud:8860/air_quality.db?apikey=FzWZJqldrYQxJPIYzX6rPTowcCzhE40xFthINUFNlb4'):
@@ -29,8 +30,17 @@ class DataWatcher:
 
     def parse_reading(self, json_data, reading_type, device_id):
         logging.info(f"Parsing reading for device {device_id} and type {reading_type}")
+        ts_str = json_data.get('ts')
+        # Convert ts to datetime if it's a string
+        ts_dt = None
+        if ts_str:
+            try:
+                # Handle ISO format with Z
+                ts_dt = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
+            except Exception:
+                ts_dt = ts_str  # fallback, but should be datetime for DB
         return Reading(
-            ts=json_data.get('ts'),
+            ts=ts_dt,
             co2=json_data.get('co2', 0.0),
             pm1=json_data.get('pm1', 0.0),
             pr=json_data.get('pr', 0.0),
@@ -48,19 +58,27 @@ class DataWatcher:
 
     def run(self, device_ids=None):  # Added optional device_ids parameter
         session = self.db_manager.get_session()
-        devices = session.query(ReaderDevice).filter(ReaderDevice.id.in_(device_ids)).all() if device_ids else session.query(ReaderDevice).all()  # Filter devices if device_ids is provided
+        devices = session.query(ReaderDevice).filter(ReaderDevice.id.in_(device_ids)).all() if device_ids else session.query(ReaderDevice).all()
         new_readings = []
         for device in devices:
             data = self.fetch_data(device.uri)
             for reading_type in ['daily', 'hourly', 'monthly', 'instant']:
                 for reading_data in data['historical'].get(reading_type, []):
                     reading = self.parse_reading(reading_data, reading_type, device.id)
+                    # Ensure ts is datetime for query
+                    ts_dt = reading.ts
+                    if isinstance(ts_dt, str):
+                        try:
+                            ts_dt = datetime.fromisoformat(ts_dt.replace("Z", "+00:00"))
+                        except Exception:
+                            pass
                     existing_reading = session.query(Reading).filter_by(
-                        ts=reading.ts,
+                        ts=ts_dt,
                         device_id=reading.device_id,
                         reading_type=reading.reading_type
                     ).first()
                     if not existing_reading:
+                        reading.ts = ts_dt  # Ensure correct type for DB
                         new_readings.append(reading)
         
         if new_readings:

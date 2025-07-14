@@ -15,7 +15,7 @@ def start_watcher():
     return {"message": "Data watcher started"}
 
 @router.get("/run")
-def start_watcher():
+def run_watcher():  # Renamed to avoid duplicate function name
     data_watcher = DataWatcher()
     data_watcher.run()
     return {"message": "Data watcher runned"}
