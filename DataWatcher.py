@@ -12,6 +12,7 @@ class DataWatcher:
     def __init__(self, db_name='sqlitecloud://crhzpe9thk.g2.sqlite.cloud:8860/air_quality.db?apikey=FzWZJqldrYQxJPIYzX6rPTowcCzhE40xFthINUFNlb4'):
         self.db_manager = DatabaseManager(db_name)
         logging.basicConfig(level=logging.INFO)
+        self._stop_event = threading.Event()  # Add stop event
 
     def fetch_data(self, uri):
         logging.info(f"Fetching data from {uri}")
@@ -84,9 +85,14 @@ class DataWatcher:
     def start(self):
         def run_periodically():
             schedule.every(5).minutes.do(self.run)
-            while True:
+            while not self._stop_event.is_set():
                 schedule.run_pending()
                 time.sleep(1)
 
+        self._stop_event.clear()  # Ensure event is cleared before starting
         thread = threading.Thread(target=run_periodically, daemon=True)
         thread.start()
+        return thread  # Return the thread object
+
+    def stop(self):
+        self._stop_event.set()  # Signal the thread to stop
