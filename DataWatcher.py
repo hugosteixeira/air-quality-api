@@ -87,7 +87,7 @@ class DataWatcher:
                 try:
                     session.flush()  # Try to insert, but don't commit yet
                 except IntegrityError:
-                    session.rollback()  # Remove the failed insert from the session
+                    session.expunge(reading)  # Remove only the failed reading from the session
                     logging.info(f"Duplicate entry found for ts: {reading.ts}, device_id: {reading.device_id}, reading_type: {reading.reading_type}")
             try:
                 session.commit()
