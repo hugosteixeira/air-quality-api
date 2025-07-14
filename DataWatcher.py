@@ -62,20 +62,19 @@ class DataWatcher:
                         new_readings.append(reading)
         
         if new_readings:
-            session.add_all(new_readings)
+            for reading in new_readings:
+                session.add(reading)
+                try:
+                    session.flush()  # Try to insert, but don't commit yet
+                except IntegrityError:
+                    session.rollback()  # Remove the failed insert from the session
+                    logging.info(f"Duplicate entry found for ts: {reading.ts}, device_id: {reading.device_id}, reading_type: {reading.reading_type}")
             try:
                 session.commit()
-                logging.info(f"Successfully added {len(new_readings)} new readings.")
+                logging.info(f"Successfully added {len(new_readings)} new readings (excluding duplicates).")
             except IntegrityError as e:
-                logging.error(f"IntegrityError: {e}")
+                logging.error(f"IntegrityError on commit: {e}")
                 session.rollback()
-                for reading in new_readings:
-                    try:
-                        session.add(reading)
-                        session.commit()
-                    except IntegrityError:
-                        session.rollback()
-                        logging.info(f"Duplicate entry found for ts: {reading.ts}, device_id: {reading.device_id}, reading_type: {reading.reading_type}")
             finally:
                 session.close()
         else:
@@ -86,4 +85,5 @@ class DataWatcher:
         schedule.every(5).minutes.do(self.run)
         while True:
             schedule.run_pending()
+            time.sleep(1)
             time.sleep(1)
