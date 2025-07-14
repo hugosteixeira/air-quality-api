@@ -65,20 +65,22 @@ class DataWatcher:
             for reading_type in ['daily', 'hourly', 'monthly', 'instant']:
                 for reading_data in data['historical'].get(reading_type, []):
                     reading = self.parse_reading(reading_data, reading_type, device.id)
-                    # Ensure ts is datetime for query
+                    # Always use ISO string for ts comparison
                     ts_dt = reading.ts
-                    if isinstance(ts_dt, str):
-                        try:
-                            ts_dt = datetime.fromisoformat(ts_dt.replace("Z", "+00:00"))
-                        except Exception:
-                            pass
+                    if isinstance(ts_dt, datetime):
+                        ts_str = ts_dt.isoformat()
+                    elif isinstance(ts_dt, str):
+                        ts_str = ts_dt.replace("Z", "+00:00")
+                    else:
+                        ts_str = str(ts_dt)
+                    # Query using string representation
                     existing_reading = session.query(Reading).filter_by(
-                        ts=ts_dt,
+                        ts=ts_str,
                         device_id=reading.device_id,
                         reading_type=reading.reading_type
                     ).first()
                     if not existing_reading:
-                        reading.ts = ts_dt  # Ensure correct type for DB
+                        reading.ts = ts_str  # Store as string for consistency
                         new_readings.append(reading)
         
         if new_readings:
