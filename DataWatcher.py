@@ -6,6 +6,7 @@ from Model.readerDevice import ReaderDevice
 from Model.reading import Reading
 from DatabaseManager import DatabaseManager
 from sqlalchemy.exc import IntegrityError
+import threading
 
 class DataWatcher:
     def __init__(self, db_name='sqlitecloud://crhzpe9thk.g2.sqlite.cloud:8860/air_quality.db?apikey=FzWZJqldrYQxJPIYzX6rPTowcCzhE40xFthINUFNlb4'):
@@ -81,9 +82,11 @@ class DataWatcher:
             logging.info("No new readings to add.")
 
     def start(self):
-        self.run()
-        schedule.every(5).minutes.do(self.run)
-        while True:
-            schedule.run_pending()
-            time.sleep(1)
-            time.sleep(1)
+        def run_periodically():
+            schedule.every(5).minutes.do(self.run)
+            while True:
+                schedule.run_pending()
+                time.sleep(1)
+
+        thread = threading.Thread(target=run_periodically, daemon=True)
+        thread.start()
