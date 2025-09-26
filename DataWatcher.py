@@ -10,7 +10,7 @@ import threading
 from datetime import datetime
 
 class DataWatcher:
-    def __init__(self, db_name='sqlitecloud://crhzpe9thk.g2.sqlite.cloud:8860/air_quality.db?apikey=FzWZJqldrYQxJPIYzX6rPTowcCzhE40xFthINUFNlb4'):
+    def __init__(self, db_name='sqlite:////air-quality-db/air_quality.db'):
         self.db_manager = DatabaseManager(db_name)
         logging.basicConfig(level=logging.INFO)
         self._stop_event = threading.Event()  # Add stop event
