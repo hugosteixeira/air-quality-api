@@ -84,21 +84,20 @@ class DataWatcher:
                         new_readings.append(reading)
         
         if new_readings:
+            successful = 0
             for reading in new_readings:
                 session.add(reading)
                 try:
-                    session.flush()  # Try to insert, but don't commit yet
+                    # Commit per-reading to isolate IntegrityError to that single insert
+                    session.commit()
+                    successful += 1
                 except IntegrityError:
-                    session.expunge(reading)  # Remove only the failed reading from the session
-                    logging.info(f"Duplicate entry found for ts: {reading.ts}, device_id: {reading.device_id}, reading_type: {reading.reading_type}")
-            try:
-                session.commit()
-                logging.info(f"Successfully added {len(new_readings)} new readings (excluding duplicates).")
-            except IntegrityError as e:
-                logging.error(f"IntegrityError on commit: {e}")
-                session.rollback()
-            finally:
-                session.close()
+                    # Rollback this failed insert and continue with next reading
+                    session.rollback()
+                    logging.info(f"Duplicate or constraint error for ts: {reading.ts}, device_id: {reading.device_id}, reading_type: {reading.reading_type}")
+                    continue
+            logging.info(f"Successfully added {successful} new readings (excluding duplicates).")
+            session.close()
         else:
             logging.info("No new readings to add.")
 
